@@ -3,9 +3,11 @@ import asyncio
 import random
 import os
 from discord.ext import commands
+from requests import async
 
  
 TOKEN = ''
+API_ENDPOINT = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=easy'
  
 client = discord.Client()
  
@@ -23,6 +25,9 @@ commands = {
 
 # words = { 'Tudo bom' , 'Como vai' , 'Salve' , 'Oi' , 'Olá' }
 
+def select_answer(response):
+    item = random.choice(response.data.results)
+    await message.channel.send(item.question)
 
 @client.event
 async def on_message(message):
@@ -56,7 +61,8 @@ async def on_message(message):
         return
     
     if message.content.startswith('.pergunta'):
-        await message.channel.send('Não ta pronto ainda galerinha.')
+        await async.get(API_ENDPOINT, hooks = {'response' : select_answer})
+        return
 
     # typed = message.content
 
